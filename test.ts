@@ -1,5 +1,6 @@
 import { Alchemy, Network } from "alchemy-sdk";
 import { ethers, utils } from "ethers";
+import { buyWowToken, initializeAgent, sellWoWToken } from "./ai agent/agentFunctions";
 
 const apiKey = 'YccgqlOoLQ1RcnSi1KyRBe1zWz3tkCSo';
 const settings = {
@@ -56,6 +57,11 @@ const parseWowTokenCreatedLogs = (logs: any) => {
 
 const main = async () => {
   try {
+    
+    // Initialise the agent
+    const {agent, config} = await initializeAgent();
+
+
     // alchemy.ws.on( {
     //     address: filetering.address,
     // } , (log) => {
@@ -65,6 +71,7 @@ const main = async () => {
     // });
     const logs = await alchemy.core.getLogs({
       fromBlock: "0x1646EA3",
+      // toBlock: "0x1646EA3",
       address: "0x997020E5F59cCB79C74D527Be492Cc610CB9fA2B",
       topics: [
         "0xc14d4a89f40f2ad9a3bacaae76b1d8567b797e367ed13e62996afbb52625457f",
@@ -74,7 +81,11 @@ const main = async () => {
     });
 
     const parsedLogs = parseWowTokenCreatedLogs(logs);
+    console.log('Logs:', parsedLogs[0].tokenAddress);
     console.log('Parsed Logs:', JSON.stringify(parsedLogs, null, 2));
+    // purchase the token
+    // await buyWowToken(agent, config, parsedLogs[0].tokenAddress);
+    // await sellWoWToken(agent, config, '0xA8b33002Ce7Ad8D81479Dc82110D1c31dbab7178');
   } catch (error) {
     console.error('Error fetching logs:', error);
   }
