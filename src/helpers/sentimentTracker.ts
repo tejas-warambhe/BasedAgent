@@ -13,10 +13,10 @@ if (!telegramToken || !openaiToken) {
     throw new Error('Missing required environment variables');
 }
 
-const bot = new TelegramBot(telegramToken, { polling: true });
-const openai = new OpenAI({ apiKey: openaiToken });
-
 export const initializeSentimentTracker = () => {
+    
+    const bot = new TelegramBot(telegramToken, { polling: true });
+    const openai = new OpenAI({ apiKey: openaiToken });
 
 async function analyzeMessage(message: string) {
     try {

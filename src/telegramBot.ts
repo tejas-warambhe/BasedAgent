@@ -5,7 +5,8 @@ import { getWalletBalances } from './helpers/getBalance';
 import { traders } from './data/traders';
 import { ethers } from 'ethers';
 import { TradeConfig } from './types/trading';
-// import { setupWhaleCommands } from './src/commands/whaleCommands';
+import Snipe from './models/Snipe';
+// import { saveTraderSelection } from './helpers/traderSelection';
 
 // Load environment variables
 dotenv.config();
@@ -60,4 +61,51 @@ export const initializeTelegramBot = async () => {
     }
     });
 
+    bot.onText(/\/snipe/, async (msg) => {
+    const chatId = msg.chat.id;
+    const keyboard = {
+        reply_markup: {
+            inline_keyboard: traders.map(trader => [{
+                text: `${trader.name} - ${trader.description}`,
+                callback_data: `snipe_${trader.id}`
+            }])
+        }
+    };
+    await bot.sendMessage(chatId, 'Choose a trader to snipe:', keyboard);
+});
+
+    bot.on('callback_query', async (callbackQuery) => {
+        const msg = callbackQuery.message;
+        const data = callbackQuery.data;
+
+        if (data && data.startsWith('snipe_')) {
+            const traderId = data.split('_')[1];
+            const trader = traders.find(t => t.id === traderId);
+
+            if (trader && msg) {
+                const chatId = msg.chat.id;
+                const username = msg.chat.username || 'Unknown';
+
+                try {
+                    const newSnipe = new Snipe({
+                        chatId,
+                        username,
+                        traderId,
+                        traderAddress: trader.address
+                    });
+                    newSnipe.save();
+
+                    
+                    await bot.answerCallbackQuery(callbackQuery.id, { 
+                        text: `Selected trader: ${trader.name}` 
+                    });
+
+                    await bot.sendMessage(chatId, `You have selected trader: ${trader.name}`);
+                } catch (error) {
+                    console.error('Error saving snipe selection:', error);
+                    await bot.sendMessage(chatId, 'Error processing your selection. Please try again.');
+                }
+            }
+        }
+    });
 }

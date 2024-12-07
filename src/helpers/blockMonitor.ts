@@ -40,10 +40,11 @@ let tokenData: any[] = [];
       console.log('not erc20');
     }
   }
+  
+  // Subscribe to new blocks, or newHeads
+  alchemy.ws.on("block", (blockNumber) => {
+    blockMonitor(blockNumber);
+      console.log("Latest block:", blockNumber)
+  });
 };
 
-// Subscribe to new blocks, or newHeads
-alchemy.ws.on("block", (blockNumber) => {
-  blockMonitor(blockNumber);
-  //   console.log("Latest block:", blockNumber)
-});
