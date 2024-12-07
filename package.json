@@ -4,12 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "typescript": "^5.7.2"
   },
   "dependencies": {
@@ -19,6 +21,10 @@
     "alchemy-sdk": "^3.5.0",
     "dotenv": "^16.4.7",
     "ethers": "^5.7.2",
-    "ts-node": "^10.9.2"
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "web3": "^1.10.2"
   }
 }
