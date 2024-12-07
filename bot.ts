@@ -13,6 +13,7 @@ import {
 } from './src/helpers/copyTrade';
 import { ethers } from 'ethers';
 import { TradeConfig } from './src/types/trading';
+import { setupWhaleCommands } from './src/commands/whaleCommands';
 
 // Load environment variables
 dotenv.config();
@@ -28,6 +29,9 @@ export const initializeTelegramBot = async () => {
         // Create a bot instance
     const bot = new TelegramBot(token, { polling: true });
  
+    // Initialize bot commands
+    setupWhaleCommands(bot);
+
     // Handle /start command
     bot.onText(/\/start/, async (msg) => {
     const chatId = msg.chat.id;

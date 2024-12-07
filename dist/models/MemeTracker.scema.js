@@ -34,66 +34,15 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
-const WhaleTrackerSchema = new mongoose_1.Schema({
-    whaleAddress: {
-        type: String,
-        required: true,
-        index: true,
+const MemeTrackerSchema = new mongoose_1.Schema({
+    chatId: {
+        type: String
     },
-    tokenAddress: {
-        type: String,
-        required: true,
-        index: true,
-    },
-    tokenSymbol: {
-        type: String,
-        required: true,
-    },
-    transactionHash: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    transactionType: {
-        type: String,
-        required: true,
-        enum: ["BUY", "SELL"],
-    },
-    amount: {
-        type: String,
-        required: true,
-    },
-    amountUSD: {
-        type: Number,
-        required: true,
-    },
-    timestamp: {
-        type: Date,
-        required: true,
-        index: true,
-    },
-    network: {
-        type: String,
-        required: true,
-    },
-    priceImpact: {
-        type: Number,
-        required: true,
-    },
-    profitLoss: {
-        type: Number,
-        required: false,
-    },
-    holdingPeriod: {
-        type: Number,
-        required: false,
-    },
-    status: {
-        type: String,
-        required: true,
-        enum: ["SUCCESS", "FAILED"],
+    isCopyTrading: {
+        type: Boolean,
+        default: false
     },
 }, {
-    timestamps: true,
+    timestamps: true
 });
-exports.default = mongoose_1.default.model("WhaleTracker", WhaleTrackerSchema);
+exports.default = mongoose_1.default.model("MemeTracker", MemeTrackerSchema);
