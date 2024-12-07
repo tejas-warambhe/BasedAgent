@@ -3,7 +3,6 @@ import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import TokenSchema from '../models/Token.schema';
 import { buyWowToken, initializeAgent, sellWoWToken } from './agentFunctions';
-import { getDeployedERC20Tokens } from './rugTracker';
 
 dotenv.config();
 

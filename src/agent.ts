@@ -139,8 +139,8 @@ const main = async () => {
     ], '0x997020E5F59cCB79C74D527Be492Cc610CB9fA2B');
     
     const subscription = contract.events.WowTokenCreated({
-      fromBlock: 23370071,
-      // fromBlock: 'latest',
+      // fromBlock: 23370071,
+      fromBlock: 'latest',
     })
     .on('data', async (event: any) => {
       console.log('Event:', event);

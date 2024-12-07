@@ -8,6 +8,7 @@ import * as dotenv from "dotenv";
 import * as fs from "fs";
 import * as readline from "readline";
 import { ethers } from 'ethers';
+import { createBucket, uploadFile } from "./akaveStorage";
 
 dotenv.config();
 
@@ -63,7 +64,7 @@ export async function initializeAgent() {
     });
 
     let walletDataStr: string | null = null;
-
+    let fileExists: boolean = true;
     // Read existing wallet data if available
     if (fs.existsSync(WALLET_DATA_FILE)) {
       try {
@@ -74,6 +75,8 @@ export async function initializeAgent() {
         console.error("Error reading wallet data:", error);
         // Continue without wallet data
       }
+    }else{
+      fileExists = false;
     }
 
     // Configure CDP AgentKit
@@ -114,7 +117,10 @@ export async function initializeAgent() {
     // Save wallet data
     const exportedWallet = await agentkit.exportWallet();
     fs.writeFileSync(WALLET_DATA_FILE, exportedWallet);
-
+    // createBucket("UserWalletData")
+    if(!fileExists){
+      await uploadFile("UserWalletData", WALLET_DATA_FILE);
+    }
     return { walletAddress, agent, config: agentConfig };
   } catch (error) {
     console.error("Failed to initialize agent:", error);
