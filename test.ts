@@ -1,5 +1,8 @@
 import { Alchemy, Network } from "alchemy-sdk";
 import { ethers, utils } from "ethers";
+import { buyWowToken, initializeAgent, sellWoWToken } from "./ai agent/agentFunctions";
+import Web3 from "web3";
+import Token from "./models/Token";
 
 const apiKey = 'YccgqlOoLQ1RcnSi1KyRBe1zWz3tkCSo';
 const settings = {
@@ -56,36 +59,119 @@ const parseWowTokenCreatedLogs = (logs: any) => {
 
 const main = async () => {
   try {
-    // alchemy.ws.on( {
-    //     address: filetering.address,
-    // } , (log) => {
-    //     console.log('New log:', log);
-    //     const parsedLogs = parseWowTokenCreatedLogs(log);
-    //     console.log('Parsed Logs:', JSON.stringify(parsedLogs, null, 2));
-    // });
-    const logs = await alchemy.core.getLogs({
-      fromBlock: "0x1646EA3",
-      address: "0x997020E5F59cCB79C74D527Be492Cc610CB9fA2B",
-      topics: [
-        "0xc14d4a89f40f2ad9a3bacaae76b1d8567b797e367ed13e62996afbb52625457f",
-        "0x000000000000000000000000997020e5f59ccb79c74d527be492cc610cb9fa2b",
-        "0x000000000000000000000000282e626f1635669c075183867347b5d91c9e7ed1",
-      ],
-    });
+    
+    // Initialise the agent
+    const {agent, config} = await initializeAgent();
+    const web3 = new Web3(
+      new Web3.providers.WebsocketProvider(
+        "wss://base-mainnet.g.alchemy.com/v2/YccgqlOoLQ1RcnSi1KyRBe1zWz3tkCSo",
+      ),
+    );
+    
+    const contract = new web3.eth.Contract([
+      {
+        "anonymous": false,
+        "inputs": [
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "factoryAddress",
+            "type": "address"
+          },
+          {
+            "indexed": true,
+            "internalType": "address",
+            "name": "tokenCreator",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "platformReferrer",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "protocolFeeRecipient",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "bondingCurve",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "tokenURI",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "string",
+            "name": "symbol",
+            "type": "string"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "tokenAddress",
+            "type": "address"
+          },
+          {
+            "indexed": false,
+            "internalType": "address",
+            "name": "poolAddress",
+            "type": "address"
+          }
+        ],
+        "name": "WowTokenCreated",
+        "type": "event"
+      }
+    ], '0x997020E5F59cCB79C74D527Be492Cc610CB9fA2B');
+    
+    const subscription = contract.events.WowTokenCreated({
+      fromBlock: 23370071,
+      // fromBlock: 'latest',
+    })
+    .on('data', async (event: any) => {
+      console.log('Event:', event);
+      const parsedLogs = parseWowTokenCreatedLogs([event.raw]);
+      console.log('Parsed Logs:', JSON.stringify(parsedLogs, null, 2));
 
-    const parsedLogs = parseWowTokenCreatedLogs(logs);
-    console.log('Parsed Logs:', JSON.stringify(parsedLogs, null, 2));
+      const createToken = new Token({
+        tokenAddress: event.returnValues.tokenAddress,
+        tokenCreator: event.returnValues.tokenCreator,
+        tokenURI: event.returnValues.tokenURI,
+        name: event.returnValues.name,
+        symbol: event.returnValues.symbol,
+        poolAddress: event.returnValues.poolAddress,
+      });
+      await createToken.save();
+      // purchase the token
+      // await buyWowToken(agent, config, parsedLogs[0].tokenAddress);
+      // await sellWoWToken(agent, config, '0xA8b33002Ce7Ad8D81479Dc82110D1c31dbab7178');
+    })
+
+    // await buyWowToken(agent, config, parsedLogs[0].tokenAddress);
+    // await sellWoWToken(agent, config, '0xA8b33002Ce7Ad8D81479Dc82110D1c31dbab7178');
   } catch (error) {
     console.error('Error fetching logs:', error);
   }
 };
 
-const runMain = async () => {
+export const startAgent = async () => {
   try {
     await main();
   } catch (error) {
     console.log(error);
   }
 };
-
-runMain();

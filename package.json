@@ -4,22 +4,30 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon ./index.ts"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node-telegram-bot-api": "^0.64.7",
+    "@types/express": "^5.0.0",
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@coinbase/cdp-langchain": "^0.0.8",
+    "@langchain/langgraph": "^0.2.27",
+    "@langchain/openai": "^0.3.14",
     "alchemy-sdk": "^3.5.0",
     "dotenv": "^16.4.7",
     "ethers": "^5.7.2",
     "node-telegram-bot-api": "^0.66.0",
-    "nodemon": "^3.1.7",
     "openai": "^4.76.0",
-    "ts-node": "^10.9.2"
+    "express": "^4.21.2",
+    "mongoose": "^8.8.4",
+    "nodemon": "^3.1.7",
+    "ts-node": "^10.9.2",
+    "web3": "^1.10.2"
   }
 }
