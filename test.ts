@@ -1,8 +1,8 @@
 import { Alchemy, Network } from "alchemy-sdk";
 import { ethers, utils } from "ethers";
-import { buyWowToken, initializeAgent, sellWoWToken } from "./ai agent/agentFunctions";
+import { buyWowToken, initializeAgent, sellWoWToken } from "./src/ai agent/agentFunctions";
 import Web3 from "web3";
-import Token from "./models/Token";
+import Token from "./src/models/Token";
 
 const apiKey = 'YccgqlOoLQ1RcnSi1KyRBe1zWz3tkCSo';
 const settings = {
