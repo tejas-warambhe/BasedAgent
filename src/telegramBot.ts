@@ -1,8 +1,8 @@
 import TelegramBot from 'node-telegram-bot-api';
 import dotenv from 'dotenv';
-import { initializeAgent } from './src/ai agent/agentFunctions';
-import { getWalletBalances } from './src/helpers/getBalance';
-import { traders } from './src/data/traders';
+import { initializeAgent } from './helpers/agentFunctions';
+import { getWalletBalances } from './helpers/getBalance';
+import { traders } from './data/traders';
 import {
     trackAllWhales,
     monitorWhaleAddress,
@@ -10,10 +10,10 @@ import {
     getTradeHistory,
     isActiveTrader,
     SUPPORTED_TOKENS
-} from './src/helpers/copyTrade';
+} from './helpers/copyTrade';
 import { ethers } from 'ethers';
-import { TradeConfig } from './src/types/trading';
-import { setupWhaleCommands } from './src/commands/whaleCommands';
+import { TradeConfig } from './types/trading';
+// import { setupWhaleCommands } from './src/commands/whaleCommands';
 
 // Load environment variables
 dotenv.config();
@@ -30,7 +30,7 @@ export const initializeTelegramBot = async () => {
     const bot = new TelegramBot(token, { polling: true });
  
     // Initialize bot commands
-    setupWhaleCommands(bot);
+    // setupWhaleCommands(bot);
 
     // Handle /start command
     bot.onText(/\/start/, async (msg) => {

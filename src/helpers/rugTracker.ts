@@ -12,12 +12,12 @@ if (!ALCHEMY_API_KEY) {
 // Configure Alchemy SDK
 const config = {
     apiKey: ALCHEMY_API_KEY,
-    network: Network.ETH_MAINNET
+    network: Network.BASE_MAINNET
 };
 
 const alchemy = new Alchemy(config);
 
-async function getDeployedERC20Tokens(walletAddress: string) {
+export async function getDeployedERC20Tokens(walletAddress: string, tokenAddress: string) {
     try {
         // Get all token contracts created by this address
         const response = await alchemy.core.getAssetTransfers({
@@ -27,42 +27,56 @@ async function getDeployedERC20Tokens(walletAddress: string) {
             withMetadata: true,
             excludeZeroValue: true,
         });
-
+        // console.log(walletAddress);
+        console.log(response.transfers);
         // Create a Set to store unique token contract addresses
         const uniqueTokenContracts = new Set<string>();
 
         // Filter for contract creation transactions (where 'to' is null)
-        response.transfers.forEach(transfer => {
-            if (transfer.to === null && transfer.asset) {
-                uniqueTokenContracts.add(transfer.asset);
+        // response.transfers.forEach(transfer => {
+        //     if (transfer.from === null && transfer.asset) {
+        //         console.log(transfer.asset);
+        //         uniqueTokenContracts.add(transfer.asset);
+        //     }
+        // });
+        for(let i = 0; i < response.transfers.length; i++){
+            if(response.transfers[i].from === null && response.transfers[i].asset){
+                console.log(response.transfers[i].asset, ' I was here');
+                uniqueTokenContracts.add(response.transfers[i].asset as string);
             }
-        });
+        }
+        console.log(uniqueTokenContracts);
+        
 
         // Get token details for each contract
-        const tokenDetails = await Promise.all(
-            Array.from(uniqueTokenContracts).map(async (contractAddress) => {
-                try {
-                    const metadata = await alchemy.core.getTokenMetadata(contractAddress);
-                    return {
-                        address: contractAddress,
-                        name: metadata.name,
-                        symbol: metadata.symbol,
-                        decimals: metadata.decimals
-                    };
-                } catch (error) {
-                    console.error(`Error fetching metadata for ${contractAddress}:`, error);
-                    return null;
-                }
-            })
-        );
+        // const tokenDetails = await Promise.all(
+        //     Array.from(uniqueTokenContracts).map(async (contractAddress) => {
+        //         try {
+        //             const metadata = await alchemy.core.getTokenMetadata(contractAddress);
+        //             return {
+        //                 address: contractAddress,
+        //                 name: metadata.name,
+        //                 symbol: metadata.symbol,
+        //                 decimals: metadata.decimals
+        //             };
+        //         } catch (error) {
+        //             console.error(`Error fetching metadata for ${contractAddress}:`, error);
+        //             return null;
+        //         }
+        //     })
+        // );
+
+        // console.log(tokenDetails);
 
         // Filter out null values and return results
-        const validTokens = tokenDetails.filter(token => token !== null);
+        // const validTokens = tokenDetails.filter(token => token !== null);
 
-        return {
-            totalTokensDeployed: validTokens.length,
-            tokens: validTokens
-        };
+        // return {
+        //     totalTokensDeployed: validTokens.length,
+        //     tokens: validTokens
+        // };
+        // console.log(validTokens);
+        // console.log(tokenDetails.length);
     } catch (error) {
         console.error('Error in getDeployedERC20Tokens:', error);
         throw error;
@@ -70,16 +84,16 @@ async function getDeployedERC20Tokens(walletAddress: string) {
 }
 
 // Example usage
-async function main() {
-    try {
-        const walletAddress = '0xYourWalletAddress'; // Replace with actual wallet address
-        const result = await getDeployedERC20Tokens(walletAddress);
-        console.log(`Total ERC20 tokens deployed: ${result.totalTokensDeployed}`);
-        console.log('Tokens:', result.tokens);
-    } catch (error) {
-        console.error('Error:', error);
-    }
-}
+// async function main() {
+//     try {
+//         const walletAddress = '0xYourWalletAddress'; // Replace with actual wallet address
+//         const result = await getDeployedERC20Tokens(walletAddress);
+//         console.log(`Total ERC20 tokens deployed: ${result.totalTokensDeployed}`);
+//         console.log('Tokens:', result.tokens);
+//     } catch (error) {
+//         console.error('Error:', error);
+//     }
+// }
 
 // Uncomment to run the example
 // main();

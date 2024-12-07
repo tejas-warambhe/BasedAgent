@@ -1,8 +1,8 @@
 import { Alchemy, Network } from "alchemy-sdk";
 import { ethers, utils } from "ethers";
-import { buyWowToken, initializeAgent, sellWoWToken } from "./src/ai agent/agentFunctions";
+import { buyWowToken, initializeAgent, sellWoWToken } from "./helpers/agentFunctions";
 import Web3 from "web3";
-import Token from "./src/models/Token.schema";
+import Token from "./models/Token.schema";
 
 const apiKey = 'YccgqlOoLQ1RcnSi1KyRBe1zWz3tkCSo';
 const settings = {
@@ -152,7 +152,7 @@ const main = async () => {
         tokenCreator: event.returnValues.tokenCreator,
         tokenURI: event.returnValues.tokenURI,
         name: event.returnValues.name,
-        symbol: event.returnValues.symbol,
+        symbol: event.returnValues.symbol.toUpperCase(),
         poolAddress: event.returnValues.poolAddress,
       });
       await createToken.save();
