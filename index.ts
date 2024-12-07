@@ -1,5 +1,5 @@
 import express from 'express';
-import connectDB from './config/db';
+import connectDB from "./src/config/db";
 import { startAgent } from './test';
 const app = express();
 const PORT= process.env.PORT || 4001;

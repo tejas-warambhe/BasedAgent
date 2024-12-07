@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const telegramToken = process.env.TELEGRAM_TOKEN;
+const telegramToken = process.env.TELEGRAM_TOKEN_SENTINENT;
 const openaiToken = process.env.OPENAI_API_KEY;
 
 if (!telegramToken || !openaiToken) {

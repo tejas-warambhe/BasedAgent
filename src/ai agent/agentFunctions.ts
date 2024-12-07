@@ -55,6 +55,7 @@ const WALLET_DATA_FILE = "wallet_data.txt";
  * @returns Agent executor and config
  */
 export async function initializeAgent() {
+  let walletAddress: string | null = null;
   try {
     // Initialize LLM
     const llm = new ChatOpenAI({
@@ -67,6 +68,8 @@ export async function initializeAgent() {
     if (fs.existsSync(WALLET_DATA_FILE)) {
       try {
         walletDataStr = fs.readFileSync(WALLET_DATA_FILE, "utf8");
+        const walletData = JSON.parse(walletDataStr);
+        walletAddress = walletData.defaultAddressId;
       } catch (error) {
         console.error("Error reading wallet data:", error);
         // Continue without wallet data
@@ -112,7 +115,7 @@ export async function initializeAgent() {
     const exportedWallet = await agentkit.exportWallet();
     fs.writeFileSync(WALLET_DATA_FILE, exportedWallet);
 
-    return { agent, config: agentConfig };
+    return { walletAddress, agent, config: agentConfig };
   } catch (error) {
     console.error("Failed to initialize agent:", error);
     throw error; // Re-throw to be handled by caller

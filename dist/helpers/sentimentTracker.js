@@ -16,7 +16,7 @@ const node_telegram_bot_api_1 = __importDefault(require("node-telegram-bot-api")
 const openai_1 = __importDefault(require("openai"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const telegramToken = process.env.TELEGRAM_TOKEN;
+const telegramToken = process.env.TELEGRAM_TOKEN_SENTINENT;
 const openaiToken = process.env.OPENAI_API_KEY;
 if (!telegramToken || !openaiToken) {
     throw new Error('Missing required environment variables');
