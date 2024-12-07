@@ -9,7 +9,7 @@ export const traders: Trader[] = [
     {
         id: '1',
         name: '🐋 DegenSpartan',
-        address: '0x74c1a59c9fbde5e86d6bf67f5c44f2f2ae1d01d7',
+        address: '0x8a919b906abF4160ffb8a21a739205896d3f89bB',
         description: 'Known for high-profit BASE trades'
     },
     {

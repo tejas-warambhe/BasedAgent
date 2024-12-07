@@ -4,7 +4,7 @@ import { startAgent } from './agent';
 import { initializeTelegramBot } from './telegramBot';
 // import { startWhaleMonitoring } from './helpers/copyTrade';
 import {initializeSentimentTracker} from './helpers/sentimentTracker';
-import { setupBlockMonitor } from './helpers/blockMonitor';
+// import { setupBlockMonitor } from './helpers/blockMonitor';
 const app = express();
 const PORT= process.env.PORT || 4001;
 
@@ -24,5 +24,5 @@ connectDB().then(async () => {
     await initializeTelegramBot();
     await initializeSentimentTracker();
     // await startWhaleMonitoring();
-    setupBlockMonitor(3000);
+    // setupBlockMonitor(3000);
 })

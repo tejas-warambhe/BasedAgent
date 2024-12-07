@@ -4,7 +4,7 @@ import { traders } from "../data/traders";
 
 dotenv.config();
 
-// const MONITOR_ADDRESS: string[] = traders.map((trader) => trader.address);
+const MONITOR_ADDRESS: string[] = traders.map((trader) => trader.address);
 
 const settings = {
   apiKey: process.env.ALCHEMY_API_KEY, // Replace with your Alchemy API Key.
@@ -13,6 +13,9 @@ const settings = {
 const alchemy = new Alchemy(settings);
 
 export const blockMonitor = async (blockNumber: number) => {
+let erc20Addresses: any[] = [];
+let tokenData: any[] = [];
+
   const params = {
     blockNumber: blockNumber.toString(),
   };
@@ -23,14 +26,21 @@ export const blockMonitor = async (blockNumber: number) => {
 
     try {
       const contract = element?.to;
-      console.log(contract);
-      await alchemy.core.getTokenMetadata(contract!);
+      const metadata = await alchemy.core.getTokenMetadata(contract!);
+
+      if (metadata.decimals !== 0 || metadata.decimals !== undefined || metadata.decimals !== null) {
+        erc20Addresses.push(element);   
+        tokenData.push(metadata.symbol, metadata.decimals, metadata.name, metadata.logo);     
+      }
+
+      if (MONITOR_ADDRESS.includes(element?.from!)) {
+        const erc20Transfers = erc20Addresses.filter((address) => address.from === element?.from);        
+      }
     } catch (error) {
-    //   console.log('not erc20');
+      console.log('not erc20');
     }
   }
 };
-//   console.log("Latest block:", blockNumber)
 
 // Subscribe to new blocks, or newHeads
 alchemy.ws.on("block", (blockNumber) => {
