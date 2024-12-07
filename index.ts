@@ -1,6 +1,7 @@
 import express from 'express';
 import connectDB from "./src/config/db";
 import { startAgent } from './test';
+import { initializeTelegramBot } from './bot';
 const app = express();
 const PORT= process.env.PORT || 4001;
 
@@ -17,4 +18,5 @@ const main = async () => {
 connectDB().then(async () => {
     await main();
     await startAgent();
+    await initializeTelegramBot();
 })
