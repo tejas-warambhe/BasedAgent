@@ -3,11 +3,12 @@ import connectDB from "./config/db";
 import { startAgent } from './agent';
 import { initializeTelegramBot } from './telegramBot';
 // import { startWhaleMonitoring } from './helpers/copyTrade';
-import {initializeSentimentTracker} from './helpers/sentimentTracker';
+// import {initializeSentimentTracker} from './helpers/sentimentTracker';
 // import { setupBlockMonitor } from './helpers/blockMonitor';
-import { initializeSentimentTrackerServer } from './sentimentServer';
+// import { initializeSentimentTrackerServer } from './sentimentServer';
 import { spawn } from 'child_process';
 import path from 'path';
+import { initializeSentimentTrackerServer } from './sentimentServer';
 
 const app = express();
 const PORT= process.env.PORT || 4000;
@@ -20,30 +21,30 @@ const main = async () => {
     });
 }
 
-async function startSentimentTrackerServer() {
-    return new Promise<void>((resolve, reject) => {
-        const sentimentServerPath = path.join(__dirname, 'sentimentServer.ts');
-        const sentimentServer = spawn('ts-node', [sentimentServerPath], {
-            stdio: 'inherit',
-            shell: true
-        });
+// async function startSentimentTrackerServer() {
+//     return new Promise<void>((resolve, reject) => {
+//         const sentimentServerPath = path.join(__dirname, 'sentimentServer.ts');
+//         const sentimentServer = spawn('ts-node', [sentimentServerPath], {
+//             stdio: 'inherit',
+//             shell: true
+//         });
 
-        sentimentServer.on('error', (error) => {
-            console.error('Failed to start sentiment tracker server:', error);
-            reject(error);
-        });
+//         sentimentServer.on('error', (error) => {
+//             console.error('Failed to start sentiment tracker server:', error);
+//             reject(error);
+//         });
 
-        sentimentServer.on('close', (code) => {
-            if (code === 0) {
-                console.log('Sentiment Tracker Server closed successfully');
-                resolve();
-            } else {
-                console.error(`Sentiment Tracker Server exited with code ${code}`);
-                reject(new Error(`Sentiment Tracker Server exited with code ${code}`));
-            }
-        });
-    });
-}
+//         sentimentServer.on('close', (code) => {
+//             if (code === 0) {
+//                 console.log('Sentiment Tracker Server closed successfully');
+//                 resolve();
+//             } else {
+//                 console.error(`Sentiment Tracker Server exited with code ${code}`);
+//                 reject(new Error(`Sentiment Tracker Server exited with code ${code}`));
+//             }
+//         });
+//     });
+// }
 
 (async () => {
     try {
@@ -51,6 +52,7 @@ async function startSentimentTrackerServer() {
         await main();
         await startAgent();
         await initializeTelegramBot();
+        await initializeSentimentTrackerServer();
         // await initializeSentimentTracker();
         // await startWhaleMonitoring();
         // setupBlockMonitor(3000);

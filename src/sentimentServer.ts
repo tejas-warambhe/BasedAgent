@@ -13,7 +13,7 @@ if (!telegramToken || !openaiToken) {
 }
 
 export async function initializeSentimentTrackerServer() {
-    const bot = new TelegramBot(telegramToken, { polling: true });
+    const bot = new TelegramBot(telegramToken);
     const openai = new OpenAI({ apiKey: openaiToken });
 
     async function analyzeMessage(message: string) {

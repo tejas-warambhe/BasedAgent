@@ -20,7 +20,7 @@ if (!token) {
 
 export const initializeTelegramBot = async () => {
         // Create a bot instance
-    const bot = new TelegramBot(token, { polling: true });
+    const bot = new TelegramBot(token);
  
     // Initialize bot commands
     // setupWhaleCommands(bot);
