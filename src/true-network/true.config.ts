@@ -1,5 +1,5 @@
 
-import { TrueApi, testnet } from '@truenetworkio/sdk'
+import { I32, Schema, TrueApi, U32, U64, testnet } from '@truenetworkio/sdk'
 import { TrueConfig } from '@truenetworkio/sdk/dist/utils/cli-config'
 
 // If you are not in a NodeJS environment, please comment the code following code:
@@ -30,4 +30,8 @@ export const config: TrueConfig = {
     schemas: []
   },
 }
+
+export const gameWhaleReputationSchema = Schema.create({
+  score: I32,
+})
   
