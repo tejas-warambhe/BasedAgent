@@ -26,6 +26,7 @@
     "@langchain/openai": "^0.3.14",
     "@truenetworkio/sdk": "^0.0.10",
     "@types/dotenv": "^8.2.3",
+    "@types/mongoose": "^5.11.97",
     "alchemy-sdk": "^2.10.1",
     "dotenv": "^16.4.7",
     "ethers": "^5.7.2",
