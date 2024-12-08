@@ -1,14 +1,17 @@
-# Whale Trade Tracking Bot
+# Based Agent
 
-A Telegram bot for monitoring and analyzing whale trading activities on the BASE network. Track significant trades, analyze trading history, and monitor whale wallet activities in real-time.
+A Telegram bot that is based enough to trade degen memecoins on wow.xyz as per sentimental analysis of telegram group messages and trade history.
+The agent is strong enough to identify whitelisted whale trades from live transactional data.
+We are using Base Agentkit, a lot of rules and conditions to handle complex trading scenarios.
 
 ## Features
 
-- 🐋 **Whale Trade Monitoring**: Track significant trades from known whale addresses
-- 📊 **Balance Checking**: View your ETH and USDC balances on BASE
-- 📈 **Trade History**: Analyze trading history for any address
-- 🔍 **Active Trader Detection**: Identify actively trading addresses
-- 🤖 **AI-Powered**: Integrated with AI agent for enhanced functionality
+- Trades on your behalf on wow.xyz (degen memecoin platform) before even the bonding curve is converted.
+- Initializes the bot with your wallet details
+- Monitors sentiment in a Telegram group
+- Identifies whitelisted whale trades
+- Monitors your ETH and USDC balances
+- Monitors whale trades and sends notifications
 
 ## Commands
 
@@ -28,6 +31,13 @@ A Telegram bot for monitoring and analyzing whale trading activities on the BASE
 3. Create a `.env` file with:
    ```
    TELEGRAM_BOT_TOKEN=your_bot_token
+   CDP_API_KEY_NAME=your_api_key_name
+   CDP_API_KEY_PRIVATE_KEY=your_api_key_private_key
+   OPENAI_API_KEY=your_openai_api_key
+   MONGO_URI=your_mongodb_uri
+   TELEGRAM_TOKEN_SENTIMENT=your_telegram_bot_token
+   OPENAI_API_KEY=your_openai_api_key
+   ALCHEMY_API_KEY=your_alchemy_api_key
    ```
 4. Start the bot:
    ```bash
@@ -36,7 +46,15 @@ A Telegram bot for monitoring and analyzing whale trading activities on the BASE
 
 ## Environment Variables
 
-- `TELEGRAM_BOT_TOKEN`: Your Telegram bot token from BotFather
+TELEGRAM_BOT_TOKEN=your_bot_token
+CDP_API_KEY_NAME=your_api_key_name
+CDP_API_KEY_PRIVATE_KEY=your_api_key_private_key
+OPENAI_API_KEY=your_openai_api_key
+MONGO_URI=your_mongodb_uri
+TELEGRAM_TOKEN_SENTIMENT=your_telegram_bot_token
+OPENAI_API_KEY=your_openai_api_key
+ALCHEMY_API_KEY=your_alchemy_api_key
+
 
 ## Supported Tokens
 
@@ -54,18 +72,32 @@ A Telegram bot for monitoring and analyzing whale trading activities on the BASE
 
 ```
 ├── src/
-│   ├── ai agent/
-│   │   └── agentFunctions.ts
+│   ├── agent.ts
+│   ├── index.ts
+│   ├── sentimentServer.ts
+│   ├── telegramBot.ts
+│   ├── commands/
+│   │   └── ...
+│   ├── config/
+│   │   └── ...
+│   ├── data/
+│   │   └── ...
 │   ├── helpers/
-│   │   ├── copyTrade.ts
-│   │   └── getBalance.ts
-│   ├── types/
-│   │   └── trading.ts
-│   └── data/
-│       └── traders.ts
-├── bot.ts
+│   │   └── ...
+│   ├── models/
+│   │   └── ...
+│   └── types/
+│       └── ...
+├── dist/
+├── frontend/
+├── node_modules/
+├── reputation-data/
+├── .env
+├── .gitignore
 ├── package.json
-└── .env
+├── package-lock.json
+├── tsconfig.json
+└── wallet_data.txt
 ```
 
 ## Contributing

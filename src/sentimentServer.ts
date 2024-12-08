@@ -3,10 +3,12 @@ import OpenAI from 'openai';
 import dotenv from 'dotenv';
 import { buyWowToken, initializeAgent, sellWoWToken } from './helpers/agentFunctions';
 import TokenSchema from './models/Token.schema';
+import { sendNotification } from './telegramBot';
+import MemeTracker from './models/MemeTracker.scema';
 
 dotenv.config();
 
-const telegramToken = process.env.TELEGRAM_TOKEN_SENTIMENT;
+const telegramToken = "8010496670:AAE-GcfRbsY2ChM-qRJzOZk-MK_xFLGukVU";
 const openaiToken = process.env.OPENAI_API_KEY;
 
 if (!telegramToken || !openaiToken) {
@@ -43,6 +45,7 @@ export const initializeSentimentTracker = () => {
 
     // Listen for any kind of message
     bot.on('channel_post', async (msg: any) => {
+        console.log('debugging msg', msg);
         if (!msg.text) return;
 
         console.log('Received message:', msg.text);
@@ -60,19 +63,30 @@ export const initializeSentimentTracker = () => {
                 // getDeployedERC20Tokens(tickerDetails.tokenCreator, tickerDetails.tokenAddress);
 
                 const { agent, config } = await initializeAgent();
+                console.log('Chat Id', msg.chat.id);
+                const chatIds = await MemeTracker.find({ chatId: msg.chat.id });
+                console.log('Chat Id from DB', chatIds);
                 if (analysis.type.toLowerCase() == 'buy') {
                     await buyWowToken(
                         agent,
                         config,
                         tickerDetails?.tokenAddress!,
                     );
+                    chatIds.forEach(async (chat) => {
+                        // await sendNotification(chat.chatId, `Bought a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);
+                        await sendNotification(chat.chatId, `Bought a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);
+                    });
                 } else {
                     await sellWoWToken
                         (
                             agent,
                             config,
                             tickerDetails?.tokenAddress!,
-                        )
+                        );
+                    chatIds.forEach(async (chat) => {   
+                        await sendNotification(chat.chatId, `Sold a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);    
+
+                    });
                 }
             }
             // You can add your custom logic here to handle the trading call

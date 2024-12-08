@@ -6,24 +6,21 @@ import { traders } from './data/traders';
 import { ethers } from 'ethers';
 import { TradeConfig } from './types/trading';
 import Snipe from './models/Snipe';
+import MemeTracker from './models/MemeTracker.scema';
 // import { saveTraderSelection } from './helpers/traderSelection';
 
 // Load environment variables
 dotenv.config();
-
-// Replace 'YOUR_BOT_TOKEN' with your actual bot token from environment variables
-const token = process.env.TELEGRAM_BOT_TOKEN;
+const token = "7639380899:AAHIYSAMVxQRGhSuQc2psOKLW2kvTa4K_2Y";
 
 if (!token) {
     throw new Error('TELEGRAM_BOT_TOKEN is not defined in .env file');
 }
- // Create a bot instance
- const bot = new TelegramBot(token);
-export const initializeTelegramBot = async () => {
-   
+const bot = new TelegramBot(token, { polling: true });
 
-    // Initialize bot commands
-    // setupWhaleCommands(bot);
+// Create a bot instance
+export const initializeTelegramBot = async () => {
+    // Replace 'YOUR_BOT_TOKEN' with your actual bot token from environment variables
 
     // Handle /start command
     bot.onText(/\/start/, async (msg) => {
@@ -114,17 +111,18 @@ export const initializeTelegramBot = async () => {
         const chatId = msg.chat.id;
         try {
 
-            await bot.sendMessage(chatId, `You have now subscribed to the Sentiment Snipper bot.`);
-
+            await bot.sendMessage(chatId, `You have now subscribed to the Sentiment Sniper bot.`);
+            const saveSender = new MemeTracker({chatId, isCopying: false});
+            await saveSender.save();
         } catch (error) {
             console.error('Error in /sentimentSnipper command:', error);
             await bot.sendMessage(chatId, 'Error getting balance. Please try again later.');
         }
     });
 
-  
 }   
-
 export async function sendNotification(chatId:number,message:string){
     await bot.sendMessage(chatId, message);
+    // console.log('yoyo');
+    
 }       
