@@ -17,62 +17,62 @@ const token = process.env.TELEGRAM_BOT_TOKEN;
 if (!token) {
     throw new Error('TELEGRAM_BOT_TOKEN is not defined in .env file');
 }
-
+ // Create a bot instance
+ const bot = new TelegramBot(token);
 export const initializeTelegramBot = async () => {
-        // Create a bot instance
-    const bot = new TelegramBot(token);
- 
+   
+
     // Initialize bot commands
     // setupWhaleCommands(bot);
 
     // Handle /start command
     bot.onText(/\/start/, async (msg) => {
-    const chatId = msg.chat.id;
-    
-    try {
-        // Initialize agent and get wallet address
-        const { walletAddress } = await initializeAgent();
-        const balance = await getWalletBalances(walletAddress || '');
-        
-        if (walletAddress) {
-        await bot.sendMessage(chatId, `Your onchain agent wallet address is: ${walletAddress}. Fund it with some USDC and ETH on BASE to start trading.`);
-        await bot.sendMessage(chatId, `Your ETH balance is: ${balance.eth}`);
-        await bot.sendMessage(chatId, `Your USDC balance is: ${balance.usdc}`);
-        } else {
-        await bot.sendMessage(chatId, 'No wallet address found.');
+        const chatId = msg.chat.id;
+
+        try {
+            // Initialize agent and get wallet address
+            const { walletAddress } = await initializeAgent();
+            const balance = await getWalletBalances(walletAddress || '');
+
+            if (walletAddress) {
+                await bot.sendMessage(chatId, `Your onchain agent wallet address is: ${walletAddress}. Fund it with some USDC and ETH on BASE to start trading.`);
+                await bot.sendMessage(chatId, `Your ETH balance is: ${balance.eth}`);
+                await bot.sendMessage(chatId, `Your USDC balance is: ${balance.usdc}`);
+            } else {
+                await bot.sendMessage(chatId, 'No wallet address found.');
+            }
+        } catch (error) {
+            console.error('Error in /start command:', error);
+            await bot.sendMessage(chatId, 'Error initializing agent. Please try again later.');
         }
-    } catch (error) {
-        console.error('Error in /start command:', error);
-        await bot.sendMessage(chatId, 'Error initializing agent. Please try again later.');
-    }
     });
 
     bot.onText(/\/balance/, async (msg) => {
-    const chatId = msg.chat.id;
-    try {
-        // Initialize agent and get wallet address
-        const { walletAddress } = await initializeAgent();
-        const balance = await getWalletBalances(walletAddress || '');
-        await bot.sendMessage(chatId, `Your ETH balance is: ${balance.eth}`);
-        await bot.sendMessage(chatId, `Your USDC balance is: ${balance.usdc}`);
-    } catch (error) {
-        console.error('Error in /balance command:', error);
-        await bot.sendMessage(chatId, 'Error getting balance. Please try again later.');
-    }
+        const chatId = msg.chat.id;
+        try {
+            // Initialize agent and get wallet address
+            const { walletAddress } = await initializeAgent();
+            const balance = await getWalletBalances(walletAddress || '');
+            await bot.sendMessage(chatId, `Your ETH balance is: ${balance.eth}`);
+            await bot.sendMessage(chatId, `Your USDC balance is: ${balance.usdc}`);
+        } catch (error) {
+            console.error('Error in /balance command:', error);
+            await bot.sendMessage(chatId, 'Error getting balance. Please try again later.');
+        }
     });
 
     bot.onText(/\/snipe/, async (msg) => {
-    const chatId = msg.chat.id;
-    const keyboard = {
-        reply_markup: {
-            inline_keyboard: traders.map(trader => [{
-                text: `${trader.name} - ${trader.description}`,
-                callback_data: `snipe_${trader.id}`
-            }])
-        }
-    };
-    await bot.sendMessage(chatId, 'Choose a trader to snipe:', keyboard);
-});
+        const chatId = msg.chat.id;
+        const keyboard = {
+            reply_markup: {
+                inline_keyboard: traders.map(trader => [{
+                    text: `${trader.name} - ${trader.description}`,
+                    callback_data: `snipe_${trader.id}`
+                }])
+            }
+        };
+        await bot.sendMessage(chatId, 'Choose a trader to snipe:', keyboard);
+    });
 
     bot.on('callback_query', async (callbackQuery) => {
         const msg = callbackQuery.message;
@@ -95,9 +95,9 @@ export const initializeTelegramBot = async () => {
                     });
                     newSnipe.save();
 
-                    
-                    await bot.answerCallbackQuery(callbackQuery.id, { 
-                        text: `Selected trader: ${trader.name}` 
+
+                    await bot.answerCallbackQuery(callbackQuery.id, {
+                        text: `Selected trader: ${trader.name}`
                     });
 
                     await bot.sendMessage(chatId, `You have selected trader: ${trader.name}`);
@@ -108,4 +108,23 @@ export const initializeTelegramBot = async () => {
             }
         }
     });
-}
+
+
+    bot.onText(/\/sentimentSnipper/, async (msg) => {
+        const chatId = msg.chat.id;
+        try {
+
+            await bot.sendMessage(chatId, `You have now subscribed to the Sentiment Snipper bot.`);
+
+        } catch (error) {
+            console.error('Error in /sentimentSnipper command:', error);
+            await bot.sendMessage(chatId, 'Error getting balance. Please try again later.');
+        }
+    });
+
+  
+}   
+
+export async function sendNotification(chatId:number,message:string){
+    await bot.sendMessage(chatId, message);
+}       

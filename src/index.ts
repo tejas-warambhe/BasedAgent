@@ -8,7 +8,7 @@ import { initializeTelegramBot } from './telegramBot';
 // import { initializeSentimentTrackerServer } from './sentimentServer';
 import { spawn } from 'child_process';
 import path from 'path';
-import { initializeSentimentTrackerServer } from './sentimentServer';
+import { initializeSentimentTracker } from './sentimentServer';
 
 const app = express();
 const PORT= process.env.PORT || 4000;
@@ -52,7 +52,7 @@ const main = async () => {
         await main();
         await startAgent();
         await initializeTelegramBot();
-        await initializeSentimentTrackerServer();
+        await initializeSentimentTracker();
         // await initializeSentimentTracker();
         // await startWhaleMonitoring();
         // setupBlockMonitor(3000);

@@ -1,79 +1,98 @@
-import dotenv from 'dotenv';
 import TelegramBot from 'node-telegram-bot-api';
 import OpenAI from 'openai';
+import dotenv from 'dotenv';
+import { buyWowToken, initializeAgent, sellWoWToken } from './helpers/agentFunctions';
+import TokenSchema from './models/Token.schema';
 
-// Load environment variables
 dotenv.config();
 
-const telegramToken = "8010496670:AAE-GcfRbsY2ChM-qRJzOZk-MK_xFLGukVU";
+const telegramToken = process.env.TELEGRAM_TOKEN_SENTIMENT;
 const openaiToken = process.env.OPENAI_API_KEY;
 
 if (!telegramToken || !openaiToken) {
     throw new Error('Missing required environment variables');
 }
 
-export async function initializeSentimentTrackerServer() {
-    const bot = new TelegramBot(telegramToken);
-    const openai = new OpenAI({ apiKey: openaiToken });
+const bot = new TelegramBot(telegramToken, { polling: true });
+const openai = new OpenAI({ apiKey: openaiToken });
+
+export const initializeSentimentTracker = () => {
 
     async function analyzeMessage(message: string) {
         try {
             const response = await openai.chat.completions.create({
                 model: "gpt-3.5-turbo",
-                messages: [
-                    {
-                        role: "system",
-                        content: "You are a sentiment analysis assistant. Analyze the sentiment of the following message and respond with 'positive', 'negative', or 'neutral'."
-                    },
-                    {
-                        role: "user",
-                        content: message
-                    }
-                ]
+                messages: [{
+                    role: "system",
+                    // content: "You are a trading analyst. Analyze the given message and determine if it's a trading call. If it is, extract the ticker symbol. Return JSON in this format: {isTradingCall: boolean, ticker: string or null, type: 'buy' or 'sell' or null}"
+                    content: "You are a person who is always concise and to the point, never misses any important detail provided as input, so now you have to analyze the given message where the ticker would be a token whose prefix is $ (for example $COW, here the ticker is COW, your task is to determine the sentiment in binary terms which is either buy or sell, there's no middle grould, the format should always Return JSON in this format: {isTradingCall: boolean, ticker: string or null, type: 'buy' or 'sell'}"
+                }, {
+                    role: "user",
+                    content: message
+                }],
+                temperature: 0.7,
             });
 
-            return response.choices[0].message.content?.toLowerCase();
+            const analysis = JSON.parse(response.choices[0].message.content || '{}');
+            return analysis;
         } catch (error) {
-            console.error('Error analyzing sentiment:', error);
-            return 'error';
+            console.error('Error analyzing message:', error);
+            return { isTradingCall: false, ticker: null, type: null };
         }
     }
 
-    bot.on('message', async (msg) => {
-        const chatId = msg.chat.id;
-        const message = msg.text;
+    // Listen for any kind of message
+    bot.on('channel_post', async (msg: any) => {
+        if (!msg.text) return;
 
-        if (message) {
-            try {
-                const sentiment = await analyzeMessage(message);
-                
-                let responseText = '';
-                switch (sentiment) {
-                    case 'positive':
-                        responseText = '😊 Positive sentiment detected!';
-                        break;
-                    case 'negative':
-                        responseText = '😞 Negative sentiment detected.';
-                        break;
-                    case 'neutral':
-                        responseText = '😐 Neutral sentiment detected.';
-                        break;
-                    default:
-                        responseText = 'Unable to analyze sentiment.';
+        console.log('Received message:', msg.text);
+
+        const analysis = await analyzeMessage(msg.text);
+
+        if (analysis.isTradingCall && analysis.ticker) {
+            console.log(`Trading Call Detected!`);
+            console.log(`Ticker: ${analysis.ticker}`);
+            console.log(`Type: ${analysis.type}`);
+            const tickerDetails = await checkTickerAvailability(analysis.ticker);
+            // Ticker is available
+            if (tickerDetails != '') {
+                console.log('Ticker is available');
+                // getDeployedERC20Tokens(tickerDetails.tokenCreator, tickerDetails.tokenAddress);
+
+                const { agent, config } = await initializeAgent();
+                if (analysis.type.toLowerCase() == 'buy') {
+                    await buyWowToken(
+                        agent,
+                        config,
+                        tickerDetails?.tokenAddress!,
+                    );
+                } else {
+                    await sellWoWToken
+                        (
+                            agent,
+                            config,
+                            tickerDetails?.tokenAddress!,
+                        )
                 }
-
-                bot.sendMessage(chatId, responseText);
-            } catch (error) {
-                console.error('Error processing message:', error);
-                bot.sendMessage(chatId, 'Sorry, I encountered an error processing your message.');
             }
+            // You can add your custom logic here to handle the trading call
+            // For example, store it in a database, send notifications, etc.
         }
     });
 
-    console.log('Sentiment Tracker Server initialized');
+    console.log('Bot is running...');
 }
 
-// If this file is run directly (for standalone server)
-if (require.main === module) {
-    initializeSentimentTrackerServer().catch(console.error);
+const checkTickerAvailability = async (ticker: string) => {
+try{
+    const findTicker = await TokenSchema.findOne({ symbol: ticker.toUpperCase() });
+
+    if (findTicker) {
+        return findTicker;
+    }
+    return '';
+}catch(error){
+    console.log(error);
+}
+   
 }
