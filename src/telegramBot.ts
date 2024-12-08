@@ -108,6 +108,7 @@ export const initializeTelegramBot = async () => {
 
 
     bot.onText(/\/sentimentSnipper/, async (msg) => {
+        console.log('sentimentSnipper',msg);
         const chatId = msg.chat.id;
         try {
 

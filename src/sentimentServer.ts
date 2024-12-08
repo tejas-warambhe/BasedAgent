@@ -64,7 +64,15 @@ export const initializeSentimentTracker = () => {
 
                 const { agent, config } = await initializeAgent();
                 console.log('Chat Id', msg.chat.id);
-                const chatIds = await MemeTracker.find({ chatId: msg.chat.id });
+                const chatIds = await MemeTracker.find({});
+                // remove duplicate chat ids
+                const uniqueChatIds: any = [];
+                chatIds.forEach((chat) => {
+                    if (!uniqueChatIds.includes(chat.chatId)) {
+                        uniqueChatIds.push(chat.chatId);
+                    }
+                });
+                console.log('Unique Chat Ids', uniqueChatIds);
                 console.log('Chat Id from DB', chatIds);
                 if (analysis.type.toLowerCase() == 'buy') {
                     await buyWowToken(
@@ -72,9 +80,9 @@ export const initializeSentimentTracker = () => {
                         config,
                         tickerDetails?.tokenAddress!,
                     );
-                    chatIds.forEach(async (chat) => {
+                    uniqueChatIds.forEach(async (chat: any) => {
                         // await sendNotification(chat.chatId, `Bought a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);
-                        await sendNotification(chat.chatId, `Bought a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);
+                        await sendNotification(chat, `Bought a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);
                     });
                 } else {
                     await sellWoWToken
@@ -83,8 +91,8 @@ export const initializeSentimentTracker = () => {
                             config,
                             tickerDetails?.tokenAddress!,
                         );
-                    chatIds.forEach(async (chat) => {   
-                        await sendNotification(chat.chatId, `Sold a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);    
+                    uniqueChatIds.forEach(async (chat: any) => {   
+                        await sendNotification(chat, `Sold a Token having address ${tickerDetails?.tokenAddress} and symbol ${tickerDetails?.symbol} worth 0.000138 ETH`);    
 
                     });
                 }
