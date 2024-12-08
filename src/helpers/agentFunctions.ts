@@ -215,8 +215,6 @@ export const buyWowToken = async (agent: any, config: any, tokenAddress: string)
         {
         messages: [
             new HumanMessage(`Buy a WoW Token having address ${tokenAddress} worth 0.000138 ETH`),
-            // new HumanMessage(`Check balance of the token address ${tokenAddress} which is a WoW zora token and if it's greater than 0, sell it`),
-            // new HumanMessage(`I want to know the amount of gas required to buy a WoW Token having address ${tokenAddress} worth 0.00001 ETH`),
         ],
         },
         config

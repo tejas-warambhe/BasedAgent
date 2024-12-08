@@ -9,6 +9,7 @@ import { initializeTelegramBot } from './telegramBot';
 import { spawn } from 'child_process';
 import path from 'path';
 import { initializeSentimentTracker } from './sentimentServer';
+import { snipeCall } from './helpers/blockMonitor';
 
 const app = express();
 const PORT= process.env.PORT || 4000;
@@ -53,11 +54,7 @@ const main = async () => {
         await startAgent();
         await initializeTelegramBot();
         await initializeSentimentTracker();
-        // await initializeSentimentTracker();
-        // await startWhaleMonitoring();
-        // setupBlockMonitor(3000);
-        // Start Sentiment Tracker Server in a separate process
-        // await startSentimentTrackerServer();
+        await snipeCall();
     } catch (error) {
         console.error('Error in main initialization:', error);
         process.exit(1);

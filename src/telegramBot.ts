@@ -33,8 +33,8 @@ export const initializeTelegramBot = async () => {
 
             if (walletAddress) {
                 await bot.sendMessage(chatId, `Your onchain agent wallet address is: ${walletAddress}. Fund it with some USDC and ETH on BASE to start trading.`);
-                await bot.sendMessage(chatId, `Your ETH balance is: ${balance.eth}`);
-                await bot.sendMessage(chatId, `Your USDC balance is: ${balance.usdc}`);
+                // await bot.sendMessage(chatId, `Your ETH balance is: ${balance.eth}`);
+                // await bot.sendMessage(chatId, `Your USDC balance is: ${balance.usdc}`);
             } else {
                 await bot.sendMessage(chatId, 'No wallet address found.');
             }
@@ -88,7 +88,7 @@ export const initializeTelegramBot = async () => {
                         chatId,
                         username,
                         traderId,
-                        traderAddress: trader.address
+                        traderAddress: trader.address.toString().toLowerCase()
                     });
                     newSnipe.save();
 
@@ -107,8 +107,7 @@ export const initializeTelegramBot = async () => {
     });
 
 
-    bot.onText(/\/sentimentSnipper/, async (msg) => {
-        console.log('sentimentSnipper',msg);
+    bot.onText(/\/sentiment/, async (msg) => {
         const chatId = msg.chat.id;
         try {
 
